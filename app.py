@@ -9,12 +9,12 @@ Original file is located at
 
 import streamlit as st
 import numpy as np
-import matplotlib.pyplot as plt
 
 st.title("Beam Path Optimizer")
 
 # Generate random beam points
 n = st.slider("Number of Beam Points", 10, 100, 30)
+
 points = np.random.rand(n, 2) * 100
 
 # Nearest-neighbor optimization
@@ -23,27 +23,27 @@ unvisited = list(range(1, n))
 
 while unvisited:
     last = visited[-1]
+
     next_point = min(
         unvisited,
         key=lambda i: np.linalg.norm(points[last] - points[i])
     )
+
     visited.append(next_point)
     unvisited.remove(next_point)
 
-# Plot optimized beam path
-fig, ax = plt.subplots()
+# Create optimized path coordinates
+path_x = [points[i][0] for i in visited]
+path_y = [points[i][1] for i in visited]
 
-for i in range(len(visited) - 1):
-    p1 = points[visited[i]]
-    p2 = points[visited[i + 1]]
+# Visualize with Streamlit native chart
+st.line_chart(
+    {
+        "x": path_x,
+        "y": path_y
+    }
+)
 
-    ax.plot(
-        [p1[0], p2[0]],
-        [p1[1], p2[1]]
-    )
-
-ax.scatter(points[:, 0], points[:, 1])
-
-ax.set_title("Optimized Beam Scan Path")
-
-st.pyplot(fig)
+# Show optimized order
+st.write("Optimized Beam Order:")
+st.write(visited)
